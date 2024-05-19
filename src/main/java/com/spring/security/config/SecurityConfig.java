@@ -55,7 +55,7 @@ public class SecurityConfig {
 				.authorizeHttpRequests(auth -> auth
 						.requestMatchers("/api/v1/greetings/hello", "/api/v1/greetings/user", "/api/v1/greetings/admin")
 						.authenticated()
-						.requestMatchers("/api/v1/greetings/bye", "/api/v1/user/save", "/api/v1/user/login")
+						.requestMatchers("/api/v1/greetings/bye", "/api/v1/user/save", "/api/v1/user/login", "/api/v1/user/refresh/token")
 						.permitAll())
 				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 				.authenticationProvider(authenticationProvider())

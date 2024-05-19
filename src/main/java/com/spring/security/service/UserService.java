@@ -9,6 +9,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.spring.security.dto.AuthRequest;
+import com.spring.security.dto.JwtResponse;
+import com.spring.security.entity.RefreshToken;
 import com.spring.security.entity.User;
 import com.spring.security.repository.UserRepository;
 
@@ -23,6 +25,9 @@ public class UserService {
 
 	@Autowired
 	private JwtService jwtService;
+	
+	@Autowired
+	private RefreshTokenService refreshTokenService;
 
 	@Autowired
 	private AuthenticationManager authenticationManager;
@@ -38,11 +43,13 @@ public class UserService {
 		return token;
 	}
 
-	public String authenticateAndGetToken(AuthRequest authRequest) {
+	public JwtResponse authenticateAndGetToken(AuthRequest authRequest) {
 		Authentication authentication = authenticationManager.authenticate(
 				new UsernamePasswordAuthenticationToken(authRequest.getUsername(), authRequest.getPassword()));
 		if (authentication.isAuthenticated()) {
-			return jwtService.generateToken(authRequest.getUsername());
+			RefreshToken refreshToken = refreshTokenService.createRefreshToken(authRequest.getUsername());
+			JwtResponse jwtResponse = new JwtResponse(jwtService.generateToken(authRequest.getUsername()), refreshToken.getToken());
+			return jwtResponse;
 		} else {
 			throw new UsernameNotFoundException("Not found");
 		}
